@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Study with AI</h1>
+    <p>Ask questions and get instant help from our AI tutor</p>
+</div>
+
+<div class="content-card">
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+            <div class="message ai">
+                <p>Hello! I'm your AI study assistant. Ask me anything about your studies and I'll help you understand the concepts better.</p>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Ask me anything about your studies..." onkeypress="handleKeyPress(event)">
+            <button class="btn" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="content-card">
+    <h3>Study Tips</h3>
+    <div class="tips-grid">
+        <div class="tip-card">
+            <i class="fas fa-lightbulb"></i>
+            <h4>Ask Specific Questions</h4>
+            <p>Be specific about what you want to learn or understand</p>
+        </div>
+        <div class="tip-card">
+            <i class="fas fa-book"></i>
+            <h4>Request Examples</h4>
+            <p>Ask for examples to better understand complex concepts</p>
+        </div>
+        <div class="tip-card">
+            <i class="fas fa-question-circle"></i>
+            <h4>Clarify Doubts</h4>
+            <p>Don't hesitate to ask follow-up questions</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Add user message to chat
+    addMessage(message, 'user');
+    input.value = '';
+    
+    // Show loading
+    const loadingMessage = addMessage('Thinking...', 'ai');
+    
+    // Send to backend
+    fetch('/study_ai', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `message=${encodeURIComponent(message)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Remove loading message
+        loadingMessage.remove();
+        
+        if (data.error) {
+            addMessage('Sorry, I encountered an error. Please try again.', 'ai');
+        } else {
+            addMessage(data.response, 'ai');
+        }
+    })
+    .catch(error => {
+        loadingMessage.remove();
+        addMessage('Sorry, I encountered an error. Please try again.', 'ai');
+    });
+}
+
+function addMessage(text, sender) {
+    const messagesContainer = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}`;
+    messageDiv.innerHTML = `<p>${text}</p>`;
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    return messageDiv;
+}
+
+function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+}
+</script>
+{% endblock %}

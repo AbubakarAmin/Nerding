@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Book Search</h1>
+    <p>Discover and explore books from the Open Library database</p>
+</div>
+
+<div class="content-card">
+    <h3>Search Books</h3>
+    <div class="search-container">
+        <input type="text" id="bookSearch" placeholder="Search for books by title, author, or subject..." onkeypress="handleSearchKeyPress(event)">
+        <button class="btn" onclick="searchBooks()">
+            <i class="fas fa-search"></i> Search
+        </button>
+    </div>
+</div>
+
+<div class="content-card" id="searchResults" style="display: none;">
+    <h3>Search Results</h3>
+    <div id="booksList" class="books-grid">
+        <!-- Books will be loaded here -->
+    </div>
+</div>
+
+<div class="content-card">
+    <h3>Popular Categories</h3>
+    <div class="categories-grid">
+        <div class="category-card" onclick="searchByCategory('mathematics')">
+            <i class="fas fa-calculator"></i>
+            <h4>Mathematics</h4>
+        </div>
+        <div class="category-card" onclick="searchByCategory('science')">
+            <i class="fas fa-flask"></i>
+            <h4>Science</h4>
+        </div>
+        <div class="category-card" onclick="searchByCategory('history')">
+            <i class="fas fa-landmark"></i>
+            <h4>History</h4>
+        </div>
+        <div class="category-card" onclick="searchByCategory('literature')">
+            <i class="fas fa-book-open"></i>
+            <h4>Literature</h4>
+        </div>
+        <div class="category-card" onclick="searchByCategory('philosophy')">
+            <i class="fas fa-brain"></i>
+            <h4>Philosophy</h4>
+        </div>
+        <div class="category-card" onclick="searchByCategory('computer science')">
+            <i class="fas fa-laptop-code"></i>
+            <h4>Computer Science</h4>
+        </div>
+    </div>
+</div>
+
+<div class="content-card">
+    <h3>Featured Books</h3>
+    <div class="featured-books">
+        <div class="book-card">
+            <div class="book-cover">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="book-info">
+                <h4>The Elements of Style</h4>
+                <p>William Strunk Jr.</p>
+                <span class="book-year">1918</span>
+            </div>
+        </div>
+        <div class="book-card">
+            <div class="book-cover">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="book-info">
+                <h4>A Brief History of Time</h4>
+                <p>Stephen Hawking</p>
+                <span class="book-year">1988</span>
+            </div>
+        </div>
+        <div class="book-card">
+            <div class="book-cover">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="book-info">
+                <h4>The Art of War</h4>
+                <p>Sun Tzu</p>
+                <span class="book-year">5th Century BC</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function searchBooks() {
+    const query = document.getElementById('bookSearch').value.trim();
+    if (!query) {
+        alert('Please enter a search term!');
+        return;
+    }
+    
+    const resultsDiv = document.getElementById('searchResults');
+    const booksList = document.getElementById('booksList');
+    
+    // Show loading
+    booksList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Searching books...</div>';
+    resultsDiv.style.display = 'block';
+    
+    // Fetch books from backend
+    fetch(`/search_books?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                booksList.innerHTML = '<div class="error">Sorry, there was an error searching for books. Please try again.</div>';
+            } else if (data.books.length === 0) {
+                booksList.innerHTML = '<div class="no-results">No books found. Try a different search term.</div>';
+            } else {
+                displayBooks(data.books);
+            }
+        })
+        .catch(error => {
+            booksList.innerHTML = '<div class="error">Sorry, there was an error searching for books. Please try again.</div>';
+        });
+}
+
+function displayBooks(books) {
+    const booksList = document.getElementById('booksList');
+    booksList.innerHTML = '';
+    
+    books.forEach(book => {
+        const bookCard = document.createElement('div');
+        bookCard.className = 'book-card';
+        bookCard.innerHTML = `
+            <div class="book-cover">
+                ${book.cover ? `<img src="${book.cover}" alt="${book.title}">` : '<i class="fas fa-book"></i>'}
+            </div>
+            <div class="book-info">
+                <h4>${book.title}</h4>
+                <p>${book.author}</p>
+                <span class="book-year">${book.year}</span>
+                <div class="book-actions">
+                    <button class="btn-small btn-secondary" onclick="viewBookDetails('${book.title}', '${book.author}')">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </div>
+            </div>
+        `;
+        booksList.appendChild(bookCard);
+    });
+}
+
+function searchByCategory(category) {
+    document.getElementById('bookSearch').value = category;
+    searchBooks();
+}
+
+function handleSearchKeyPress(event) {
+    if (event.key === 'Enter') {
+        searchBooks();
+    }
+}
+
+function viewBookDetails(title, author) {
+    alert(`Book Details:\nTitle: ${title}\nAuthor: ${author}\n\nThis would open a detailed view in a real implementation.`);
+}
+</script>
+{% endblock %}

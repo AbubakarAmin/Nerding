@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Research Papers</h1>
+    <p>Search and explore academic research papers from Archive.org</p>
+</div>
+
+<div class="content-card">
+    <h3>Search Research Papers</h3>
+    <div class="search-container">
+        <input type="text" id="researchSearch" placeholder="Search for research papers by topic, author, or keywords..." onkeypress="handleSearchKeyPress(event)">
+        <button class="btn" onclick="searchResearch()">
+            <i class="fas fa-search"></i> Search
+        </button>
+    </div>
+</div>
+
+<div class="content-card" id="searchResults" style="display: none;">
+    <h3>Search Results</h3>
+    <div id="papersList" class="papers-list">
+        <!-- Papers will be loaded here -->
+    </div>
+</div>
+
+<div class="content-card">
+    <h3>Research Categories</h3>
+    <div class="categories-grid">
+        <div class="category-card" onclick="searchByCategory('artificial intelligence')">
+            <i class="fas fa-robot"></i>
+            <h4>Artificial Intelligence</h4>
+        </div>
+        <div class="category-card" onclick="searchByCategory('machine learning')">
+            <i class="fas fa-brain"></i>
+            <h4>Machine Learning</h4>
+        </div>
+        <div class="category-card" onclick="searchByCategory('quantum computing')">
+            <i class="fas fa-atom"></i>
+            <h4>Quantum Computing</h4>
+        </div>
+        <div class="category-card" onclick="searchByCategory('neuroscience')">
+            <i class="fas fa-head-side-brain"></i>
+            <h4>Neuroscience</h4>
+        </div>
+        <div class="category-card" onclick="searchByCategory('climate change')">
+            <i class="fas fa-leaf"></i>
+            <h4>Climate Change</h4>
+        </div>
+        <div class="category-card" onclick="searchByCategory('biotechnology')">
+            <i class="fas fa-dna"></i>
+            <h4>Biotechnology</h4>
+        </div>
+    </div>
+</div>
+
+<div class="content-card">
+    <h3>Featured Research Areas</h3>
+    <div class="featured-research">
+        <div class="research-card">
+            <div class="research-icon">
+                <i class="fas fa-microscope"></i>
+            </div>
+            <div class="research-info">
+                <h4>Scientific Research</h4>
+                <p>Explore cutting-edge scientific discoveries and breakthroughs</p>
+            </div>
+        </div>
+        <div class="research-card">
+            <div class="research-icon">
+                <i class="fas fa-laptop-code"></i>
+            </div>
+            <div class="research-info">
+                <h4>Technology Studies</h4>
+                <p>Latest research in computer science and technology</p>
+            </div>
+        </div>
+        <div class="research-card">
+            <div class="research-icon">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <div class="research-info">
+                <h4>Medical Research</h4>
+                <p>Healthcare and medical research papers</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-card">
+    <h3>Research Tips</h3>
+    <div class="tips-grid">
+        <div class="tip-card">
+            <i class="fas fa-search"></i>
+            <h4>Use Specific Keywords</h4>
+            <p>Be specific with your search terms for better results</p>
+        </div>
+        <div class="tip-card">
+            <i class="fas fa-filter"></i>
+            <h4>Filter by Date</h4>
+            <p>Look for recent papers to get the latest research</p>
+        </div>
+        <div class="tip-card">
+            <i class="fas fa-bookmark"></i>
+            <h4>Save Important Papers</h4>
+            <p>Bookmark papers that are relevant to your studies</p>
+        </div>
+        <div class="tip-card">
+            <i class="fas fa-quote-left"></i>
+            <h4>Cite Properly</h4>
+            <p>Always cite research papers properly in your work</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function searchResearch() {
+    const query = document.getElementById('researchSearch').value.trim();
+    if (!query) {
+        alert('Please enter a search term!');
+        return;
+    }
+    
+    const resultsDiv = document.getElementById('searchResults');
+    const papersList = document.getElementById('papersList');
+    
+    // Show loading
+    papersList.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Searching research papers...</div>';
+    resultsDiv.style.display = 'block';
+    
+    // Fetch papers from backend
+    fetch(`/search_research?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                papersList.innerHTML = '<div class="error">Sorry, there was an error searching for papers. Please try again.</div>';
+            } else if (data.papers.length === 0) {
+                papersList.innerHTML = '<div class="no-results">No research papers found. Try a different search term.</div>';
+            } else {
+                displayPapers(data.papers);
+            }
+        })
+        .catch(error => {
+            papersList.innerHTML = '<div class="error">Sorry, there was an error searching for papers. Please try again.</div>';
+        });
+}
+
+function displayPapers(papers) {
+    const papersList = document.getElementById('papersList');
+    papersList.innerHTML = '';
+    
+    papers.forEach(paper => {
+        const paperCard = document.createElement('div');
+        paperCard.className = 'paper-card';
+        paperCard.innerHTML = `
+            <div class="paper-header">
+                <h4>${paper.title}</h4>
+                <span class="paper-date">${paper.date}</span>
+            </div>
+            <div class="paper-author">
+                <i class="fas fa-user"></i>
+                <span>${paper.creator}</span>
+            </div>
+            <div class="paper-description">
+                <p>${paper.description}</p>
+            </div>
+            <div class="paper-actions">
+                <button class="btn-small btn-secondary" onclick="viewPaperDetails('${paper.title}', '${paper.creator}')">
+                    <i class="fas fa-eye"></i> View Details
+                </button>
+                <button class="btn-small btn" onclick="downloadPaper('${paper.title}')">
+                    <i class="fas fa-download"></i> Download
+                </button>
+            </div>
+        `;
+        papersList.appendChild(paperCard);
+    });
+}
+
+function searchByCategory(category) {
+    document.getElementById('researchSearch').value = category;
+    searchResearch();
+}
+
+function handleSearchKeyPress(event) {
+    if (event.key === 'Enter') {
+        searchResearch();
+    }
+}
+
+function viewPaperDetails(title, author) {
+    alert(`Research Paper Details:\nTitle: ${title}\nAuthor: ${author}\n\nThis would open a detailed view in a real implementation.`);
+}
+
+function downloadPaper(title) {
+    alert(`Downloading: ${title}\n\nThis would initiate a download in a real implementation.`);
+}
+</script>
+{% endblock %}

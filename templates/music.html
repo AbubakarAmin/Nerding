@@ -1,0 +1,461 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Study Music</h1>
+    <p>Focus music and ambient sounds to enhance your study sessions</p>
+</div>
+
+<div class="music-container">
+    <div class="content-card">
+        <h3>Upload Music Files</h3>
+        <form method="POST" action="{{ url_for('music') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="musicFile">Choose Music File:</label>
+                <input type="file" id="musicFile" name="music_file" accept=".mp3,.wav,.m4a,.ogg" required>
+            </div>
+            <button type="submit" class="btn">
+                <i class="fas fa-upload"></i> Upload Music
+            </button>
+        </form>
+    </div>
+
+    <div class="content-card">
+        <h3>Local Music Files</h3>
+        <div class="music-player">
+            <div class="player-controls">
+                <button class="btn-player" onclick="playPause()">
+                    <i class="fas fa-play" id="playPauseIcon"></i>
+                </button>
+                <div class="track-info">
+                    <h4 id="currentTrack">Select a track to play</h4>
+                    <p id="currentArtist">Artist</p>
+                </div>
+                <div class="volume-control">
+                    <i class="fas fa-volume-up"></i>
+                    <input type="range" id="volumeSlider" min="0" max="100" value="50">
+                </div>
+            </div>
+            <div class="track-list">
+                {% if local_files %}
+                    {% for file in local_files %}
+                    <div class="track-item" onclick="playTrack('{{ file }}')">
+                        <i class="fas fa-music"></i>
+                        <span>{{ file }}</span>
+                        <i class="fas fa-play"></i>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-tracks">No music files found. Add MP3, WAV, or M4A files to the static/music folder.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h3>Online Music</h3>
+        <div class="music-categories">
+            <div class="category-tabs">
+                <button class="tab-btn active" onclick="showCategory('focus')">Focus</button>
+                <button class="tab-btn" onclick="showCategory('ambient')">Ambient</button>
+                <button class="tab-btn" onclick="showCategory('classical')">Classical</button>
+                <button class="tab-btn" onclick="showCategory('nature')">Nature Sounds</button>
+            </div>
+            
+            <div class="category-content" id="focus">
+                <div class="online-tracks">
+                    <div class="track-item" onclick="playOnlineTrack('Focus Music 1', 'https://example.com/track1.mp3')">
+                        <i class="fas fa-music"></i>
+                        <span>Deep Focus</span>
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="track-item" onclick="playOnlineTrack('Focus Music 2', 'https://example.com/track2.mp3')">
+                        <i class="fas fa-music"></i>
+                        <span>Study Concentration</span>
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="track-item" onclick="playOnlineTrack('Focus Music 3', 'https://example.com/track3.mp3')">
+                        <i class="fas fa-music"></i>
+                        <span>Brain Waves</span>
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="category-content" id="ambient" style="display: none;">
+                <div class="online-tracks">
+                    <div class="track-item" onclick="playOnlineTrack('Ambient 1', 'https://example.com/ambient1.mp3')">
+                        <i class="fas fa-music"></i>
+                        <span>Peaceful Ambient</span>
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="track-item" onclick="playOnlineTrack('Ambient 2', 'https://example.com/ambient2.mp3')">
+                        <i class="fas fa-music"></i>
+                        <span>Calm Atmosphere</span>
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="category-content" id="classical" style="display: none;">
+                <div class="online-tracks">
+                    <div class="track-item" onclick="playOnlineTrack('Classical 1', 'https://example.com/classical1.mp3')">
+                        <i class="fas fa-music"></i>
+                        <span>Mozart Study</span>
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="track-item" onclick="playOnlineTrack('Classical 2', 'https://example.com/classical2.mp3')">
+                        <i class="fas fa-music"></i>
+                        <span>Bach Concentration</span>
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="category-content" id="nature" style="display: none;">
+                <div class="online-tracks">
+                    <div class="track-item" onclick="playOnlineTrack('Nature 1', 'https://example.com/nature1.mp3')">
+                        <i class="fas fa-music"></i>
+                        <span>Rain Sounds</span>
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="track-item" onclick="playOnlineTrack('Nature 2', 'https://example.com/nature2.mp3')">
+                        <i class="fas fa-music"></i>
+                        <span>Forest Ambience</span>
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h3>Music Benefits for Studying</h3>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <i class="fas fa-brain"></i>
+                <h4>Improved Focus</h4>
+                <p>Background music can help maintain concentration during study sessions</p>
+            </div>
+            <div class="benefit-card">
+                <i class="fas fa-heart"></i>
+                <h4>Reduced Stress</h4>
+                <p>Calming music helps reduce anxiety and stress levels</p>
+            </div>
+            <div class="benefit-card">
+                <i class="fas fa-clock"></i>
+                <h4>Better Retention</h4>
+                <p>Certain types of music can enhance memory and information retention</p>
+            </div>
+            <div class="benefit-card">
+                <i class="fas fa-volume-up"></i>
+                <h4>Noise Masking</h4>
+                <p>Music helps block out distracting background noises</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<audio id="audioPlayer" preload="none"></audio>
+
+<!-- Music Player Popup Modal -->
+<div id="musicPlayerModal" class="music-modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalSongTitle">Now Playing</h3>
+            <button class="close-btn" onclick="closeMusicModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="song-info">
+                <div class="song-artwork">
+                    <i class="fas fa-music" id="songIcon"></i>
+                </div>
+                <div class="song-details">
+                    <h4 id="modalSongName">Select a song</h4>
+                    <p id="modalSongArtist">Artist</p>
+                    <p id="modalSongDuration">00:00 / 00:00</p>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="time-display">
+                    <span id="currentTime">00:00</span>
+                    <span id="totalTime">00:00</span>
+                </div>
+                <div class="progress-bar-container">
+                    <input type="range" id="progressBar" min="0" max="100" value="0" class="progress-bar">
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="control-btn" onclick="previousTrack()">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <button class="control-btn play-btn" onclick="playPauseModal()">
+                    <i class="fas fa-play" id="modalPlayIcon"></i>
+                </button>
+                <button class="control-btn" onclick="nextTrack()">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <button class="control-btn" onclick="toggleRepeat()">
+                    <i class="fas fa-redo" id="repeatIcon"></i>
+                </button>
+                <button class="control-btn" onclick="toggleShuffle()">
+                    <i class="fas fa-random" id="shuffleIcon"></i>
+                </button>
+            </div>
+            
+            <div class="volume-container">
+                <i class="fas fa-volume-down"></i>
+                <input type="range" id="modalVolumeSlider" min="0" max="100" value="50" class="volume-slider">
+                <i class="fas fa-volume-up"></i>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentTrack = null;
+let isPlaying = false;
+let isRepeat = false;
+let isShuffle = false;
+let currentTrackIndex = 0;
+let trackList = [];
+
+// Initialize track list from the page
+function initializeTrackList() {
+    const trackItems = document.querySelectorAll('.track-item');
+    trackList = Array.from(trackItems).map(item => {
+        const span = item.querySelector('span');
+        return span ? span.textContent : '';
+    }).filter(name => name);
+}
+
+function playTrack(filename) {
+    currentTrack = filename;
+    currentTrackIndex = trackList.indexOf(filename);
+    
+    // Update main player
+    document.getElementById('currentTrack').textContent = filename;
+    document.getElementById('currentArtist').textContent = 'Local File';
+    
+    // Update modal
+    document.getElementById('modalSongName').textContent = filename;
+    document.getElementById('modalSongArtist').textContent = 'Local File';
+    
+    // Set the audio source to the actual file
+    const audioPlayer = document.getElementById('audioPlayer');
+    audioPlayer.src = `/static/music/${filename}`;
+    
+    // Show modal and start playing
+    showMusicModal();
+    playPause();
+}
+
+function playOnlineTrack(title, url) {
+    currentTrack = title;
+    
+    // Update main player
+    document.getElementById('currentTrack').textContent = title;
+    document.getElementById('currentArtist').textContent = 'Online Track';
+    
+    // Update modal
+    document.getElementById('modalSongName').textContent = title;
+    document.getElementById('modalSongArtist').textContent = 'Online Track';
+    
+    // Set the audio source to the URL
+    const audioPlayer = document.getElementById('audioPlayer');
+    audioPlayer.src = url;
+    
+    // Show modal and start playing
+    showMusicModal();
+    playPause();
+}
+
+function playPause() {
+    const icon = document.getElementById('playPauseIcon');
+    const modalIcon = document.getElementById('modalPlayIcon');
+    const audioPlayer = document.getElementById('audioPlayer');
+    
+    if (isPlaying) {
+        audioPlayer.pause();
+        icon.className = 'fas fa-play';
+        modalIcon.className = 'fas fa-play';
+        isPlaying = false;
+    } else {
+        audioPlayer.play();
+        icon.className = 'fas fa-pause';
+        modalIcon.className = 'fas fa-pause';
+        isPlaying = true;
+    }
+}
+
+function playPauseModal() {
+    playPause();
+}
+
+function showMusicModal() {
+    const modal = document.getElementById('musicPlayerModal');
+    modal.style.display = 'flex';
+}
+
+function closeMusicModal() {
+    const modal = document.getElementById('musicPlayerModal');
+    modal.style.display = 'none';
+}
+
+function previousTrack() {
+    if (trackList.length === 0) return;
+    
+    currentTrackIndex = (currentTrackIndex - 1 + trackList.length) % trackList.length;
+    const nextTrack = trackList[currentTrackIndex];
+    playTrack(nextTrack);
+}
+
+function nextTrack() {
+    if (trackList.length === 0) return;
+    
+    if (isShuffle) {
+        currentTrackIndex = Math.floor(Math.random() * trackList.length);
+    } else {
+        currentTrackIndex = (currentTrackIndex + 1) % trackList.length;
+    }
+    
+    const nextTrack = trackList[currentTrackIndex];
+    playTrack(nextTrack);
+}
+
+function toggleRepeat() {
+    isRepeat = !isRepeat;
+    const icon = document.getElementById('repeatIcon');
+    icon.style.color = isRepeat ? '#64ffda' : '#a0a6b3';
+}
+
+function toggleShuffle() {
+    isShuffle = !isShuffle;
+    const icon = document.getElementById('shuffleIcon');
+    icon.style.color = isShuffle ? '#64ffda' : '#a0a6b3';
+}
+
+function showCategory(category) {
+    // Hide all category contents
+    const contents = document.querySelectorAll('.category-content');
+    contents.forEach(content => content.style.display = 'none');
+    
+    // Remove active class from all tabs
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    
+    // Show selected category
+    document.getElementById(category).style.display = 'block';
+    
+    // Add active class to clicked tab
+    event.target.classList.add('active');
+}
+
+// Initialize everything when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializeTrackList();
+    setupAudioEvents();
+    setupVolumeControls();
+    setupProgressBar();
+});
+
+function setupAudioEvents() {
+    const audioPlayer = document.getElementById('audioPlayer');
+    
+    // Update time display
+    audioPlayer.addEventListener('timeupdate', function() {
+        updateTimeDisplay();
+        updateProgressBar();
+    });
+    
+    // Handle track end
+    audioPlayer.addEventListener('ended', function() {
+        if (isRepeat) {
+            audioPlayer.currentTime = 0;
+            audioPlayer.play();
+        } else {
+            nextTrack();
+        }
+    });
+    
+    // Handle metadata load
+    audioPlayer.addEventListener('loadedmetadata', function() {
+        updateTimeDisplay();
+    });
+}
+
+function updateTimeDisplay() {
+    const audioPlayer = document.getElementById('audioPlayer');
+    const currentTime = formatTime(audioPlayer.currentTime);
+    const totalTime = formatTime(audioPlayer.duration || 0);
+    
+    document.getElementById('currentTime').textContent = currentTime;
+    document.getElementById('totalTime').textContent = totalTime;
+    document.getElementById('modalSongDuration').textContent = `${currentTime} / ${totalTime}`;
+}
+
+function updateProgressBar() {
+    const audioPlayer = document.getElementById('audioPlayer');
+    if (audioPlayer.duration) {
+        const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+        document.getElementById('progressBar').value = progress;
+    }
+}
+
+function formatTime(seconds) {
+    if (isNaN(seconds)) return '00:00';
+    
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function setupProgressBar() {
+    const progressBar = document.getElementById('progressBar');
+    const audioPlayer = document.getElementById('audioPlayer');
+    
+    progressBar.addEventListener('input', function() {
+        if (audioPlayer.duration) {
+            const seekTime = (this.value / 100) * audioPlayer.duration;
+            audioPlayer.currentTime = seekTime;
+        }
+    });
+}
+
+function setupVolumeControls() {
+    const volumeSlider = document.getElementById('volumeSlider');
+    const modalVolumeSlider = document.getElementById('modalVolumeSlider');
+    const audioPlayer = document.getElementById('audioPlayer');
+    
+    function updateVolume(value) {
+        const volume = value / 100;
+        audioPlayer.volume = volume;
+    }
+    
+    volumeSlider.addEventListener('input', function() {
+        updateVolume(this.value);
+        modalVolumeSlider.value = this.value;
+    });
+    
+    modalVolumeSlider.addEventListener('input', function() {
+        updateVolume(this.value);
+        volumeSlider.value = this.value;
+    });
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('musicPlayerModal');
+    if (e.target === modal) {
+        closeMusicModal();
+    }
+});
+</script>
+{% endblock %}

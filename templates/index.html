@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="welcome-section">
+        <h1>Welcome to StudyEco</h1>
+        <p>Your AI-powered study companion</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-fire"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ streak_count }}</h3>
+                <p>Day Streak</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ daily_study_time }}</h3>
+                <p>Minutes Studied Today</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ due_assignments|length }}</h3>
+                <p>Due Assignments</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ current_subject }}</h3>
+                <p>Current Subject</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="quick-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-grid">
+            <a href="{{ url_for('study_ai') }}" class="action-card">
+                <i class="fas fa-robot"></i>
+                <h3>Study with AI</h3>
+                <p>Ask questions and get instant help</p>
+            </a>
+            
+            <a href="{{ url_for('quiz') }}" class="action-card">
+                <i class="fas fa-question-circle"></i>
+                <h3>Take Quiz</h3>
+                <p>Test your knowledge with AI-generated quizzes</p>
+            </a>
+            
+            <a href="{{ url_for('audiobook') }}" class="action-card">
+                <i class="fas fa-book-open"></i>
+                <h3>Create Audiobook</h3>
+                <p>Convert PDFs to audio for easy listening</p>
+            </a>
+            
+            <a href="{{ url_for('goals') }}" class="action-card">
+                <i class="fas fa-target"></i>
+                <h3>Set Goals</h3>
+                <p>Track your study progress and assignments</p>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

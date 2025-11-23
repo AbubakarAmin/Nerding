@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyEco - AI Powered Study Ecosystem</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>StudyEco</span>
+            </div>
+        </div>
+        
+        <div class="nav-center">
+            <div class="subject-dropdown">
+                <select id="subjectSelect" onchange="updateSubject()">
+                    <option value="General" {% if current_subject == 'General' %}selected{% endif %}>General</option>
+                    <option value="Mathematics" {% if current_subject == 'Mathematics' %}selected{% endif %}>Mathematics</option>
+                    <option value="Science" {% if current_subject == 'Science' %}selected{% endif %}>Science</option>
+                    <option value="History" {% if current_subject == 'History' %}selected{% endif %}>History</option>
+                    <option value="Literature" {% if current_subject == 'Literature' %}selected{% endif %}>Literature</option>
+                    <option value="Physics" {% if current_subject == 'Physics' %}selected{% endif %}>Physics</option>
+                    <option value="Chemistry" {% if current_subject == 'Chemistry' %}selected{% endif %}>Chemistry</option>
+                    <option value="Biology" {% if current_subject == 'Biology' %}selected{% endif %}>Biology</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="nav-right">
+            <div class="nav-item notifications">
+                <i class="fas fa-bell"></i>
+                <span class="notification-count">{{ due_assignments|length }}</span>
+                <div class="notification-dropdown">
+                    <h4>Due Assignments</h4>
+                    {% for assignment in due_assignments %}
+                    <div class="notification-item">
+                        <strong>{{ assignment.title }}</strong>
+                        <span>{{ assignment.subject }}</span>
+                        <small>Due: {{ assignment.due_date }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="nav-item study-time">
+                <i class="fas fa-clock"></i>
+                <span>{{ daily_study_time }}/120 min</span>
+            </div>
+            
+            <div class="nav-item streak">
+                <i class="fas fa-fire"></i>
+                <span>{{ streak_count }} day streak</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-content">
+                <div class="sidebar-section">
+                    <h3>Study Tools</h3>
+                    <ul class="sidebar-menu">
+                        <li><a href="{{ url_for('audiobook') }}" class="sidebar-link">
+                            <i class="fas fa-book-open"></i>
+                            <span>Make Audiobook</span>
+                        </a></li>
+                        <li><a href="{{ url_for('study_ai') }}" class="sidebar-link">
+                            <i class="fas fa-robot"></i>
+                            <span>Study with AI</span>
+                        </a></li>
+                        <li><a href="{{ url_for('quiz') }}" class="sidebar-link">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Take AI Quiz</span>
+                        </a></li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Planning</h3>
+                    <ul class="sidebar-menu">
+                        <li><a href="{{ url_for('goals') }}" class="sidebar-link">
+                            <i class="fas fa-target"></i>
+                            <span>Goals</span>
+                        </a></li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Resources</h3>
+                    <ul class="sidebar-menu">
+                        <li><a href="{{ url_for('music') }}" class="sidebar-link">
+                            <i class="fas fa-music"></i>
+                            <span>Music</span>
+                        </a></li>
+                        <li><a href="{{ url_for('books') }}" class="sidebar-link">
+                            <i class="fas fa-book"></i>
+                            <span>Books</span>
+                        </a></li>
+                        <li><a href="{{ url_for('research') }}" class="sidebar-link">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Research Papers</span>
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

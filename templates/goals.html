@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Study Goals & Planning</h1>
+    <p>Set your daily study goals and track your assignments</p>
+</div>
+
+<div class="goals-container">
+    <div class="content-card">
+        <h3>Daily Study Goals</h3>
+        <form id="studyGoalForm">
+            <div class="form-group">
+                <label for="dailyTime">Daily Study Time (minutes):</label>
+                <input type="number" id="dailyTime" min="30" max="480" value="120" required>
+            </div>
+            <div class="form-group">
+                <label for="goalSubject">Subject Focus:</label>
+                <select id="goalSubject">
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Science">Science</option>
+                    <option value="History">History</option>
+                    <option value="Literature">Literature</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Biology">Biology</option>
+                </select>
+            </div>
+            <button type="submit" class="btn">
+                <i class="fas fa-target"></i> Set Goal
+            </button>
+        </form>
+        
+        <div class="goal-progress">
+            <h4>Today's Progress</h4>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 25%"></div>
+            </div>
+            <p>30 / 120 minutes completed</p>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h3>Assignments</h3>
+        <form id="assignmentForm">
+            <div class="form-group">
+                <label for="assignmentTitle">Assignment Title:</label>
+                <input type="text" id="assignmentTitle" placeholder="e.g., Math Homework Chapter 5" required>
+            </div>
+            <div class="form-group">
+                <label for="assignmentSubject">Subject:</label>
+                <select id="assignmentSubject">
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Science">Science</option>
+                    <option value="History">History</option>
+                    <option value="Literature">Literature</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Biology">Biology</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dueDate">Due Date:</label>
+                <input type="date" id="dueDate" required>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="whatsappReminder"> 
+                    Remind me on WhatsApp
+                </label>
+            </div>
+            <button type="submit" class="btn">
+                <i class="fas fa-plus"></i> Add Assignment
+            </button>
+        </form>
+    </div>
+
+    <div class="content-card">
+        <h3>Upcoming Assignments</h3>
+        <div class="assignments-list">
+            <div class="assignment-item">
+                <div class="assignment-info">
+                    <h4>Math Assignment</h4>
+                    <p>Mathematics</p>
+                    <span class="due-date">Due: Jan 15, 2024</span>
+                </div>
+                <div class="assignment-actions">
+                    <button class="btn-small btn-secondary">Edit</button>
+                    <button class="btn-small btn-danger">Delete</button>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <div class="assignment-info">
+                    <h4>Science Project</h4>
+                    <p>Science</p>
+                    <span class="due-date">Due: Jan 18, 2024</span>
+                </div>
+                <div class="assignment-actions">
+                    <button class="btn-small btn-secondary">Edit</button>
+                    <button class="btn-small btn-danger">Delete</button>
+                </div>
+            </div>
+            <div class="assignment-item">
+                <div class="assignment-info">
+                    <h4>History Essay</h4>
+                    <p>History</p>
+                    <span class="due-date">Due: Jan 20, 2024</span>
+                </div>
+                <div class="assignment-actions">
+                    <button class="btn-small btn-secondary">Edit</button>
+                    <button class="btn-small btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('studyGoalForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const dailyTime = document.getElementById('dailyTime').value;
+    const subject = document.getElementById('goalSubject').value;
+    
+    alert(`Goal set! Study ${dailyTime} minutes daily focusing on ${subject}.`);
+});
+
+document.getElementById('assignmentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const title = document.getElementById('assignmentTitle').value;
+    const subject = document.getElementById('assignmentSubject').value;
+    const dueDate = document.getElementById('dueDate').value;
+    const whatsappReminder = document.getElementById('whatsappReminder').checked;
+    
+    alert(`Assignment "${title}" added for ${subject} due on ${dueDate}. ${whatsappReminder ? 'WhatsApp reminder enabled!' : ''}`);
+    
+    // Reset form
+    this.reset();
+});
+</script>
+{% endblock %}

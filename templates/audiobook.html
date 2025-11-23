@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Create Audiobook</h1>
+    <p>Convert text content to audio files for easy listening</p>
+</div>
+
+<div class="content-card">
+    <h3>Create Audiobook from Text</h3>
+    <form id="audiobookForm" method="POST" action="{{ url_for('audiobook') }}">
+        <div class="form-group">
+            <label for="textContent">Enter Text Content:</label>
+            <textarea id="textContent" name="text_content" rows="10" placeholder="Paste your text content here to convert to audio..." required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="voiceType">Voice Type:</label>
+            <select id="voiceType" name="voice_type">
+                <option value="male">Male Voice (Kore)</option>
+                <option value="female">Female Voice (Aoede)</option>
+                <option value="neutral">Neutral Voice (Kore)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="readingSpeed">Reading Speed:</label>
+            <select id="readingSpeed" name="reading_speed">
+                <option value="slow">Slow</option>
+                <option value="normal" selected>Normal</option>
+                <option value="fast">Fast</option>
+            </select>
+        </div>
+        <button type="submit" class="btn">
+            <i class="fas fa-microphone"></i> Generate Audiobook
+        </button>
+    </form>
+</div>
+
+<div class="content-card" id="audiobookResults" style="display: none;">
+    <h3>Generated Audiobook</h3>
+    <div id="audiobookContent">
+        <div class="audio-player">
+            <audio controls id="audioPlayer">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+        <div class="audiobook-info">
+            <p><strong>Status:</strong> <span id="status">Processing...</span></p>
+            <p><strong>Duration:</strong> <span id="duration">Calculating...</span></p>
+            <p><strong>File Size:</strong> <span id="fileSize">Calculating...</span></p>
+        </div>
+    </div>
+</div>
+
+<div class="content-card">
+    <h3>Features</h3>
+    <div class="features-grid">
+        <div class="feature-card">
+            <i class="fas fa-file-alt"></i>
+            <h4>Text Input</h4>
+            <p>Paste any text content for conversion</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-volume-up"></i>
+            <h4>Voice Options</h4>
+            <p>Choose from different voice types</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-download"></i>
+            <h4>Text Export</h4>
+            <p>Save formatted text for future TTS conversion</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-clock"></i>
+            <h4>Coming Soon</h4>
+            <p>TTS audio generation will be available soon</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('audiobookForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const fileInput = document.getElementById('pdfFile');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert('Please select a PDF file first!');
+        return;
+    }
+    
+    // Show results section
+    const resultsDiv = document.getElementById('audiobookResults');
+    const contentDiv = document.getElementById('audiobookContent');
+    contentDiv.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Processing PDF and generating audiobook...</div>';
+    resultsDiv.style.display = 'block';
+    
+    // Simulate processing (in real implementation, this would upload to server)
+    setTimeout(() => {
+        contentDiv.innerHTML = `
+            <div class="audio-player">
+                <audio controls id="audioPlayer">
+                    <source src="#" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+            <div class="audiobook-info">
+                <p><strong>Status:</strong> <span id="status" style="color: #64ffda;">Ready!</span></p>
+                <p><strong>Duration:</strong> <span id="duration">15:30</span></p>
+                <p><strong>File Size:</strong> <span id="fileSize">12.5 MB</span></p>
+            </div>
+            <div class="download-section">
+                <button class="btn btn-secondary" onclick="downloadAudiobook()">
+                    <i class="fas fa-download"></i> Download Audiobook
+                </button>
+            </div>
+        `;
+    }, 3000);
+});
+
+function downloadAudiobook() {
+    alert('Download feature will be implemented with actual audio file generation!');
+}
+</script>
+{% endblock %}

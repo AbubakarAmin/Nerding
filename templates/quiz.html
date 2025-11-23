@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>AI Quiz Generator</h1>
+    <p>Upload your study material and get instant quizzes to test your knowledge</p>
+</div>
+
+<div class="content-card">
+    <h3>Upload Study Material</h3>
+    <form id="quizForm">
+        <div class="form-group">
+            <label for="material">Paste your study material here:</label>
+            <textarea id="material" rows="10" placeholder="Paste your notes, textbook content, or any study material here..."></textarea>
+        </div>
+        <button type="submit" class="btn">
+            <i class="fas fa-magic"></i> Generate Quiz
+        </button>
+    </form>
+</div>
+
+<div class="content-card" id="quizResults" style="display: none;">
+    <h3>Generated Quiz</h3>
+    <div id="quizContent"></div>
+</div>
+
+<div class="content-card">
+    <h3>Supported Materials</h3>
+    <div class="material-types">
+        <div class="material-type">
+            <i class="fas fa-file-pdf"></i>
+            <h4>PDF Documents</h4>
+            <p>Upload PDF files with study content</p>
+        </div>
+        <div class="material-type">
+            <i class="fas fa-file-word"></i>
+            <h4>Word Documents</h4>
+            <p>Upload Word files with notes</p>
+        </div>
+        <div class="material-type">
+            <i class="fas fa-file-powerpoint"></i>
+            <h4>PowerPoint Slides</h4>
+            <p>Upload presentation slides</p>
+        </div>
+        <div class="material-type">
+            <i class="fas fa-sticky-note"></i>
+            <h4>Text Notes</h4>
+            <p>Paste your handwritten or typed notes</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('quizForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const material = document.getElementById('material').value.trim();
+    if (!material) {
+        alert('Please enter some study material first!');
+        return;
+    }
+    
+    // Show loading
+    const resultsDiv = document.getElementById('quizResults');
+    const quizContent = document.getElementById('quizContent');
+    quizContent.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Generating quiz...</div>';
+    resultsDiv.style.display = 'block';
+    
+    // Send to backend
+    fetch('/quiz', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `material=${encodeURIComponent(material)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            quizContent.innerHTML = '<div class="error">Sorry, there was an error generating the quiz. Please try again.</div>';
+        } else {
+            quizContent.innerHTML = `<div class="quiz-content">${data.quiz.replace(/\n/g, '<br>')}</div>`;
+        }
+    })
+    .catch(error => {
+        quizContent.innerHTML = '<div class="error">Sorry, there was an error generating the quiz. Please try again.</div>';
+    });
+});
+</script>
+{% endblock %}
