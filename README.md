@@ -1,4 +1,4 @@
-# StudyEco - AI Powered Study Ecosystem
+# Nerding - AI Powered Study Ecosystem
 
 A comprehensive web application that combines AI-powered study tools with a beautiful dark theme interface. Built with Flask and Google Gemini AI.
 
@@ -31,7 +31,7 @@ A comprehensive web application that combines AI-powered study tools with a beau
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd StudyEco
+   cd Nerding
    ```
 
 2. **Install dependencies**
